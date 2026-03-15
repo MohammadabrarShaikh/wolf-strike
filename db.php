@@ -12,4 +12,21 @@ if (!$conn) {
 }
 
 mysqli_set_charset($conn, 'utf8mb4');
+
+function refresh_user_session($conn) {
+    if (isset($_SESSION['user_id'])) {
+        $id    = (int) $_SESSION['user_id'];
+        $query = mysqli_query($conn, "SELECT vip_status, status FROM users WHERE id=$id");
+        $user  = mysqli_fetch_assoc($query);
+
+        if (!$user || $user['status'] === 'banned') {
+            session_unset();
+            session_destroy();
+            header("Location: login.php");
+            exit();
+        }
+
+        $_SESSION['vip_status'] = $user['vip_status'];
+    }
+}
 ?>

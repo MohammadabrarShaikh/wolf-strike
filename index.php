@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'db.php';
+refresh_user_session($conn);
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");

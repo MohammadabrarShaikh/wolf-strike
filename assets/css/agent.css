@@ -1,0 +1,148 @@
+/* ── agent card label wrapper ── */
+.agent-card-label {
+    cursor: pointer;
+    display: block;
+    height: 100%;
+}
+
+/* ── agent card base ── */
+.agent-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 24px 16px 20px;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    height: 100%;
+}
+
+.agent-card:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-4px);
+}
+
+.agent-card.selected {
+    transform: translateY(-6px);
+}
+
+/* ── agent colour themes ── */
+.agent-scout-card.selected {
+    border-color: #1D9E75;
+    box-shadow: 0 0 24px rgba(29,158,117,0.25);
+    background: rgba(29,158,117,0.06);
+}
+
+.agent-hunter-card.selected {
+    border-color: #7F77DD;
+    box-shadow: 0 0 24px rgba(127,119,221,0.25);
+    background: rgba(127,119,221,0.06);
+}
+
+.agent-alpha-card.selected {
+    border-color: #D85A30;
+    box-shadow: 0 0 24px rgba(216,90,48,0.25);
+    background: rgba(216,90,48,0.06);
+}
+
+.agent-phantom-card {
+    border-color: rgba(239,159,39,0.3) !important;
+    background: rgba(239,159,39,0.04) !important;
+}
+
+.agent-phantom-card.selected {
+    border-color: #EF9F27 !important;
+    box-shadow: 0 0 24px rgba(239,159,39,0.3);
+    background: rgba(239,159,39,0.08) !important;
+}
+
+/* ── vip crown badge ── */
+.vip-crown {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #EF9F27, #BA7517);
+    color: #1A1A1A;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 12px;
+    border-radius: 99px;
+}
+
+/* ── agent image ── */
+.agent-img-wrap {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.agent-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+/* ── agent name and type ── */
+.agent-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+
+.agent-type {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+}
+
+/* ── stat bars ── */
+.agent-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-row-agent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-name-agent {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+    width: 36px;
+    text-align: left;
+    flex-shrink: 0;
+}
+
+.stat-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+.stat-num {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+}
