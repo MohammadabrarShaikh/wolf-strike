@@ -516,5 +516,178 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<canvas id="bgCanvas"></canvas>
+
+<script>
+const bgCanvas  = document.getElementById('bgCanvas');
+const bgCtx     = bgCanvas.getContext('2d');
+
+bgCanvas.style.cssText = `
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+`;
+
+bgCanvas.width  = window.innerWidth;
+bgCanvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+    bgCanvas.width  = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+});
+
+const SHAPES = [
+    // gaming controller buttons
+    { type: 'circle',   symbol: '●', color: '#E24B4A' },
+    { type: 'circle',   symbol: '■', color: '#7F77DD' },
+    { type: 'circle',   symbol: '▲', color: '#1D9E75' },
+    { type: 'circle',   symbol: '✕', color: '#EF9F27' },
+    // geometric
+    { type: 'triangle', symbol: null, color: '#7F77DD' },
+    { type: 'hexagon',  symbol: null, color: '#1D9E75' },
+    { type: 'diamond',  symbol: null, color: '#534AB7' },
+    { type: 'triangle', symbol: null, color: '#EF9F27' },
+    { type: 'hexagon',  symbol: null, color: '#E24B4A' },
+    { type: 'diamond',  symbol: null, color: '#7F77DD' },
+    // extra circles with symbols
+    { type: 'circle',   symbol: '●', color: '#1D9E75' },
+    { type: 'circle',   symbol: '■', color: '#EF9F27' },
+    { type: 'triangle', symbol: null, color: '#534AB7' },
+    { type: 'hexagon',  symbol: null, color: '#7F77DD' },
+    { type: 'diamond',  symbol: null, color: '#E24B4A' },
+];
+
+function randomBetween(a, b) {
+    return Math.random() * (b - a) + a;
+}
+
+const particles = SHAPES.map((s, i) => ({
+    type:    s.type,
+    symbol:  s.symbol,
+    color:   s.color,
+    x:       randomBetween(0, window.innerWidth),
+    y:       randomBetween(0, window.innerHeight),
+    size:    randomBetween(16, 38),
+    vx:      randomBetween(-0.35, 0.35),
+    vy:      randomBetween(-0.35, 0.35),
+    angle:   randomBetween(0, Math.PI * 2),
+    spin:    randomBetween(-0.008, 0.008),
+    alpha:   randomBetween(0.06, 0.18),
+    pulse:   randomBetween(0, Math.PI * 2),
+    pulseSpeed: randomBetween(0.015, 0.03),
+}));
+
+function drawTriangle(ctx, x, y, size, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, -size);
+    ctx.lineTo(size * 0.866, size * 0.5);
+    ctx.lineTo(-size * 0.866, size * 0.5);
+    ctx.closePath();
+    ctx.restore();
+}
+
+function drawHexagon(ctx, x, y, size, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+        const a = (Math.PI / 3) * i;
+        const px = Math.cos(a) * size;
+        const py = Math.sin(a) * size;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.restore();
+}
+
+function drawDiamond(ctx, x, y, size, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, -size);
+    ctx.lineTo(size * 0.6, 0);
+    ctx.lineTo(0, size);
+    ctx.lineTo(-size * 0.6, 0);
+    ctx.closePath();
+    ctx.restore();
+}
+
+function drawCircleBtn(ctx, x, y, size, symbol, color, alpha) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 1.5;
+    ctx.globalAlpha = alpha;
+    ctx.shadowColor = color;
+    ctx.shadowBlur  = 12;
+    ctx.beginPath();
+    ctx.arc(0, 0, size, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.font        = `${size * 0.9}px Arial`;
+    ctx.fillStyle   = color;
+    ctx.textAlign   = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(symbol, 0, 1);
+
+    ctx.restore();
+}
+
+function bgLoop() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+    particles.forEach(p => {
+        p.x     += p.vx;
+        p.y     += p.vy;
+        p.angle += p.spin;
+        p.pulse += p.pulseSpeed;
+
+        const pulsedAlpha = p.alpha + Math.sin(p.pulse) * 0.04;
+        const glowSize    = p.size  + Math.sin(p.pulse) * 3;
+
+        if (p.x < -80)  p.x = bgCanvas.width  + 80;
+        if (p.x > bgCanvas.width  + 80) p.x = -80;
+        if (p.y < -80)  p.y = bgCanvas.height + 80;
+        if (p.y > bgCanvas.height + 80) p.y = -80;
+
+        bgCtx.globalAlpha = pulsedAlpha;
+        bgCtx.strokeStyle = p.color;
+        bgCtx.fillStyle   = p.color;
+        bgCtx.lineWidth   = 1.5;
+        bgCtx.shadowColor = p.color;
+        bgCtx.shadowBlur  = 15;
+
+        if (p.type === 'circle' && p.symbol) {
+            drawCircleBtn(bgCtx, p.x, p.y, glowSize, p.symbol, p.color, pulsedAlpha);
+        } else if (p.type === 'triangle') {
+            drawTriangle(bgCtx, p.x, p.y, glowSize, p.angle);
+            bgCtx.stroke();
+        } else if (p.type === 'hexagon') {
+            drawHexagon(bgCtx, p.x, p.y, glowSize, p.angle);
+            bgCtx.stroke();
+        } else if (p.type === 'diamond') {
+            drawDiamond(bgCtx, p.x, p.y, glowSize, p.angle);
+            bgCtx.stroke();
+        }
+
+        bgCtx.shadowBlur  = 0;
+        bgCtx.globalAlpha = 1;
+    });
+
+    requestAnimationFrame(bgLoop);
+}
+
+bgLoop();
+</script>
 </body>
 </html>
