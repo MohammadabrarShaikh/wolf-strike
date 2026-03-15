@@ -121,3 +121,17 @@
     color: #5DCAA5 !important;
     font-weight: 600;
 }
+
+/* ── vip badge ── */
+.vip-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #EF9F27, #BA7517);
+    color: #1A1A1A;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
