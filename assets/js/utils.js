@@ -14,17 +14,8 @@ const Utils = {
         return Utils.distanceBetween(a, b) < (a.radius + b.radius);
     },
 
-    rectCollision(entity, obstacle) {
-        return (
-            entity.x - entity.radius < obstacle.x + obstacle.w &&
-            entity.x + entity.radius > obstacle.x &&
-            entity.y - entity.radius < obstacle.y + obstacle.h &&
-            entity.y + entity.radius > obstacle.y
-        );
-    },
-
-    clamp(value, min, max) {
-        return Math.max(min, Math.min(max, value));
+    clamp(val, min, max) {
+        return Math.max(min, Math.min(max, val));
     },
 
     randomBetween(min, max) {
@@ -35,51 +26,95 @@ const Utils = {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
-    randomEdgePosition(canvasW, canvasH, margin) {
-        const side = Utils.randomInt(0, 3);
-        switch (side) {
-            case 0: return { x: Utils.randomBetween(margin, canvasW - margin), y: margin };
-            case 1: return { x: canvasW - margin, y: Utils.randomBetween(margin, canvasH - margin) };
-            case 2: return { x: Utils.randomBetween(margin, canvasW - margin), y: canvasH - margin };
-            case 3: return { x: margin, y: Utils.randomBetween(margin, canvasH - margin) };
-        }
-    },
+    // 5 platform levels all visible on screen
+    // level 1 = ground, levels 2-5 = floating platforms at fixed heights
+    generatePlatforms(canvasW, canvasH, round) {
+        const platforms = [];
+        const groundH   = 22;
 
-    generateObstacles(canvasW, canvasH, count) {
-        const obstacles = [];
-        const minW = 40, maxW = 100;
-        const minH = 40, maxH = 100;
-        const margin = 80;
-        const centerSafe = 150;
-        const cx = canvasW / 2;
-        const cy = canvasH / 2;
+        // level 1 — ground full width
+        platforms.push({
+            id:       0,
+            level:    1,
+            x:        0,
+            y:        canvasH - groundH,
+            w:        canvasW,
+            h:        groundH,
+            isGround: true,
+        });
 
-        let attempts = 0;
-        while (obstacles.length < count && attempts < 500) {
-            attempts++;
-            const w = Utils.randomInt(minW, maxW);
-            const h = Utils.randomInt(minH, maxH);
-            const x = Utils.randomInt(margin, canvasW - margin - w);
-            const y = Utils.randomInt(margin, canvasH - margin - h);
+        // levels 2-5 — fixed vertical positions, random horizontal segments
+        const topMargin    = 70;
+        const usableH      = canvasH - groundH - topMargin - 40;
+        const levelSpacing = usableH / 4;
 
-            const tooCloseToCenter = (
-                x < cx + centerSafe && x + w > cx - centerSafe &&
-                y < cy + centerSafe && y + h > cy - centerSafe
-            );
+        for (let lvl = 2; lvl <= 5; lvl++) {
+            const levelIndex = lvl - 2; // 0,1,2,3
+            const baseY      = canvasH - groundH - 60 - levelIndex * levelSpacing;
 
-            if (tooCloseToCenter) continue;
+            // 2 platform segments per level, randomly placed horizontally
+            const numSegs = 2;
+            const segW    = Utils.randomBetween(canvasW * 0.28, canvasW * 0.38);
+            const totalW  = numSegs * segW;
+            const gap     = (canvasW - totalW) / (numSegs + 1);
 
-            const overlaps = obstacles.some(o =>
-                x < o.x + o.w + 20 &&
-                x + w > o.x - 20 &&
-                y < o.y + o.h + 20 &&
-                y + h > o.y - 20
-            );
+            for (let s = 0; s < numSegs; s++) {
+                const jitter = Utils.randomBetween(-30, 30);
+                const x      = gap + s * (segW + gap) + jitter;
+                const y      = baseY + Utils.randomBetween(-20, 20);
 
-            if (!overlaps) {
-                obstacles.push({ x, y, w, h });
+                platforms.push({
+                    id:       lvl * 10 + s,
+                    level:    lvl,
+                    x:        Utils.clamp(x, 20, canvasW - segW - 20),
+                    y:        Utils.clamp(y, topMargin, canvasH - groundH - 80),
+                    w:        segW,
+                    h:        16,
+                    isGround: false,
+                });
             }
         }
-        return obstacles;
-    }
+
+        return platforms;
+    },
+
+    getBackgroundTheme(round) {
+        const themes = {
+            1: {
+                sky:    '#06061a',
+                far:    { color: '#0d0d2e' },
+                mid:    { color: '#0a0a22' },
+                accent: '#7F77DD',
+            },
+            2: {
+                sky:    '#130a1a',
+                far:    { color: '#1a0a1a' },
+                mid:    { color: '#120810' },
+                accent: '#E24B4A',
+            },
+            3: {
+                sky:    '#1a0e06',
+                far:    { color: '#1a1006' },
+                mid:    { color: '#130c04' },
+                accent: '#EF9F27',
+            },
+            4: {
+                sky:    '#050510',
+                far:    { color: '#080818' },
+                mid:    { color: '#060610' },
+                accent: '#5DCAA5',
+            },
+            5: {
+                sky:    '#1a0505',
+                far:    { color: '#1a0808' },
+                mid:    { color: '#120404' },
+                accent: '#E24B4A',
+            },
+        };
+        return themes[round] || themes[1];
+    },
+
+    lerp(a, b, t) {
+        return a + (b - a) * t;
+    },
 };

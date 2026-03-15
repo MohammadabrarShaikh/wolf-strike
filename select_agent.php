@@ -23,52 +23,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $agents = [
     [
-        'name'    => 'Scout',
-        'type'    => 'Fast · Aggressive',
-        'desc'    => 'Built for speed. Low HP but fastest movement and bullet velocity. High risk, high reward — strike before they see you.',
-        'hp'      => 60,
-        'speed'   => 9,
-        'bullet'  => 8.5,
-        'color'   => '#1D9E75',
-        'glow'    => 'rgba(29,158,117,0.4)',
-        'sel_img' => 'assets/images/player_scout_sel.png',
-        'vip'     => false,
+        'name'          => 'Scout',
+        'type'          => 'Fast · Aggressive',
+        'desc'          => 'Built for speed. Lowest gravity — floats and jumps very high but hard to control in air. High risk high reward.',
+        'hp'            => 60,
+        'speed'         => 9,
+        'bullet'        => 8.5,
+        'gravity_pct'   => 25,
+        'gravity_label' => 'Low',
+        'color'         => '#1D9E75',
+        'glow'          => 'rgba(29,158,117,0.4)',
+        'sel_img'       => 'assets/images/player_scout_sel.png',
+        'vip'           => false,
     ],
     [
-        'name'    => 'Hunter',
-        'type'    => 'Balanced · Reliable',
-        'desc'    => 'The all-rounder. Equal parts speed, firepower and durability. Best choice for new wolves entering the arena.',
-        'hp'      => 100,
-        'speed'   => 6,
-        'bullet'  => 6,
-        'color'   => '#7F77DD',
-        'glow'    => 'rgba(127,119,221,0.4)',
-        'sel_img' => 'assets/images/player_hunter_sel.png',
-        'vip'     => false,
+        'name'          => 'Hunter',
+        'type'          => 'Balanced · Reliable',
+        'desc'          => 'The all-rounder. Medium gravity gives balanced jump height and fall speed. Best choice for new wolves.',
+        'hp'            => 100,
+        'speed'         => 6,
+        'bullet'        => 6,
+        'gravity_pct'   => 55,
+        'gravity_label' => 'Med',
+        'color'         => '#7F77DD',
+        'glow'          => 'rgba(127,119,221,0.4)',
+        'sel_img'       => 'assets/images/player_hunter_sel.png',
+        'vip'           => false,
     ],
     [
-        'name'    => 'Alpha',
-        'type'    => 'Tank · Unstoppable',
-        'desc'    => 'Maximum HP, maximum presence. Slow but nearly impossible to kill. For wolves who prefer to stand their ground.',
-        'hp'      => 150,
-        'speed'   => 3.5,
-        'bullet'  => 4,
-        'color'   => '#D85A30',
-        'glow'    => 'rgba(216,90,48,0.4)',
-        'sel_img' => 'assets/images/player_alpha_sel.png',
-        'vip'     => false,
+        'name'          => 'Alpha',
+        'type'          => 'Tank · Unstoppable',
+        'desc'          => 'Maximum HP, highest gravity. Falls fast, low jump height. Dominates on ground level. Nearly impossible to kill.',
+        'hp'            => 150,
+        'speed'         => 3.5,
+        'bullet'        => 4,
+        'gravity_pct'   => 90,
+        'gravity_label' => 'High',
+        'color'         => '#D85A30',
+        'glow'          => 'rgba(216,90,48,0.4)',
+        'sel_img'       => 'assets/images/player_alpha_sel.png',
+        'vip'           => false,
     ],
     [
-        'name'    => 'Phantom',
-        'type'    => 'Elite · Exclusive',
-        'desc'    => 'The apex predator. Near-Scout speed with dual energy pistols and maximum bullet power. Reserved for VIP wolves only.',
-        'hp'      => 80,
-        'speed'   => 9.5,
-        'bullet'  => 10,
-        'color'   => '#EF9F27',
-        'glow'    => 'rgba(239,159,39,0.4)',
-        'sel_img' => 'assets/images/player_phantom_sel.png',
-        'vip'     => true,
+        'name'          => 'Phantom',
+        'type'          => 'Elite · Exclusive',
+        'desc'          => 'Near-zero gravity. Almost floats in air. Extremely agile, fastest bullet speed. The apex predator. VIP only.',
+        'hp'            => 80,
+        'speed'         => 9.5,
+        'bullet'        => 10,
+        'gravity_pct'   => 10,
+        'gravity_label' => 'Zero',
+        'color'         => '#EF9F27',
+        'glow'          => 'rgba(239,159,39,0.4)',
+        'sel_img'       => 'assets/images/player_phantom_sel.png',
+        'vip'           => true,
     ],
 ];
 
@@ -765,6 +773,16 @@ $available = array_values($available);
                 </div>
                 <div class="stat-bar-val" id="valBullet">—</div>
             </div>
+            <div class="stat-row-agent">
+    <span class="stat-name-agent">Gravity</span>
+    <div class="stat-bar-track">
+        <div class="stat-bar-fill"
+             style="width:<?php echo $agent['gravity_pct']; ?>%;
+                    background:#EF9F27;">
+        </div>
+    </div>
+    <span class="stat-num"><?php echo $agent['gravity_label']; ?></span>
+</div>
         </div>
 
         <form method="POST" action="select_agent.php" id="selectForm">

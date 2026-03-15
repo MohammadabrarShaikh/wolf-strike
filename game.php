@@ -18,10 +18,10 @@ $username   = $_SESSION['username'];
 $vip_status = $_SESSION['vip_status'];
 
 $agent_stats = [
-    'Scout'   => ['hp' => 60,  'speed' => 4.5, 'bullet_speed' => 9,  'damage' => 25],
-    'Hunter'  => ['hp' => 100, 'speed' => 3.0, 'bullet_speed' => 7,  'damage' => 20],
-    'Alpha'   => ['hp' => 150, 'speed' => 1.8, 'bullet_speed' => 5,  'damage' => 35],
-    'Phantom' => ['hp' => 80,  'speed' => 4.8, 'bullet_speed' => 10, 'damage' => 30],
+    'Scout'   => ['hp' => 60,  'speed' => 4.5, 'bullet_speed' => 9,  'damage' => 25, 'gravity' => 0.25, 'jump_force' => -13],
+    'Hunter'  => ['hp' => 100, 'speed' => 3.0, 'bullet_speed' => 7,  'damage' => 20, 'gravity' => 0.45, 'jump_force' => -11],
+    'Alpha'   => ['hp' => 150, 'speed' => 1.8, 'bullet_speed' => 5,  'damage' => 35, 'gravity' => 0.75, 'jump_force' => -9 ],
+    'Phantom' => ['hp' => 80,  'speed' => 4.8, 'bullet_speed' => 10, 'damage' => 30, 'gravity' => 0.12, 'jump_force' => -15],
 ];
 
 $stats = $agent_stats[$agent];
@@ -55,6 +55,10 @@ $stats = $agent_stats[$agent];
             <div id="score-label">SCORE</div>
             <div id="score-num">0</div>
         </div>
+        <div class="hud-item">
+    <div class="hud-label">TARGETS</div>
+    <div class="hud-val" id="bots-remaining">0</div>
+</div>
     </div>
 
     <div id="timer-bar-wrap">
@@ -79,6 +83,8 @@ $stats = $agent_stats[$agent];
     const PLAYER_SPEED        = <?php echo $stats['speed']; ?>;
     const PLAYER_BULLET_SPEED = <?php echo $stats['bullet_speed']; ?>;
     const PLAYER_DAMAGE       = <?php echo $stats['damage']; ?>;
+    const PLAYER_GRAVITY      = <?php echo $stats['gravity']; ?>;
+    const PLAYER_JUMP_FORCE   = <?php echo $stats['jump_force']; ?>;
     const PLAYER_USERNAME     = "<?php echo $username; ?>";
 </script>
 
