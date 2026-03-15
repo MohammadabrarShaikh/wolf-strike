@@ -10,6 +10,12 @@ $top_scores = mysqli_query($conn, "
            s.score, s.agent, s.kills, s.rounds_survived, s.played_at
     FROM scores s
     JOIN users u ON s.user_id = u.id
+    INNER JOIN (
+        SELECT user_id, MAX(score) AS best_score
+        FROM scores
+        GROUP BY user_id
+    ) best ON s.user_id = best.user_id AND s.score = best.best_score
+    GROUP BY s.user_id
     ORDER BY s.score DESC
     LIMIT 10
 ");
